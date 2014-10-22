@@ -102,3 +102,6 @@ PATH=$(path_remove ~/.dotfiles/libs/ruby-build/bin):~/.dotfiles/libs/ruby-build/
 if [[ "$(type -P rbenv)" && ! "$(type -t _rbenv)" ]]; then
   eval "$(rbenv init -)"
 fi
+
+# composer init
+PATH=$HOME/.composer/vendor/bin:$PATH
