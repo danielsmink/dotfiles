@@ -26,6 +26,8 @@ augroup color_scheme
   " Make invisible chars less visible in terminal.
   autocmd ColorScheme * :hi NonText ctermfg=236
   autocmd ColorScheme * :hi SpecialKey ctermfg=236
+  " Show trailing whitespace.
+  autocmd ColorScheme * :hi ExtraWhitespace ctermbg=red guibg=red
 augroup END
 colorscheme molokai
 set background=dark
@@ -71,8 +73,37 @@ set nojoinspaces " Only insert single space after a '.', '?' and '!' with a join
 set listchars=tab:▸\ ,trail:·,eol:¬,nbsp:_,extends:>,precedes:<
 "set listchars=tab:>\ ,trail:.,eol:$,nbsp:_,extends:>,precedes:<
 "set fillchars=fold:-
-nnoremap <silent> <leader>c :set nolist!<CR>
-set list
+nnoremap <silent> <leader>v :call ToggleInvisibles()<CR>
+
+" Extra whitespace
+augroup highlight_extra_whitespace
+  autocmd!
+  autocmd BufWinEnter * :2match ExtraWhitespaceMatch /\s\+$/
+  autocmd InsertEnter * :2match ExtraWhitespaceMatch /\s\+\%#\@<!$/
+  autocmd InsertLeave * :2match ExtraWhitespaceMatch /\s\+$/
+augroup END
+
+" Toggle Invisibles / Show extra whitespace
+function! ToggleInvisibles()
+  set nolist!
+  if &list
+    hi! link ExtraWhitespaceMatch ExtraWhitespace
+  else
+    hi! link ExtraWhitespaceMatch NONE
+  endif
+endfunction
+
+set nolist
+call ToggleInvisibles()
+
+" Trim extra whitespace
+function! StripExtraWhiteSpace()
+  let l = line(".")
+  let c = col(".")
+  %s/\s\+$//e
+  call cursor(l, c)
+endfunction
+noremap <leader>ss :call StripExtraWhiteSpace()<CR>
 
 " Search / replace
 set gdefault " By default add g flag to search/replace. Add g to toggle.
@@ -195,10 +226,13 @@ Plug 'bling/vim-airline'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-vinegar'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-unimpaired'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'fatih/vim-go'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'pangloss/vim-javascript'
-Plug 'scrooloose/nerdcommenter'
 Plug 'mhinz/vim-signify'
 call plug#end()
